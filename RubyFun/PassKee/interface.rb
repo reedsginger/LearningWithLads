@@ -1,3 +1,4 @@
+#May want to switch to YAML files for the sorage of data
 def auth
   if File.zero?('data/master.txt')
     puts 'Please enter a username!'
