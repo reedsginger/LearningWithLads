@@ -1,3 +1,4 @@
+require "yaml"
 #May want to switch to YAML files for the sorage of data
 def auth
   if File.zero?('data/master.txt')
@@ -25,10 +26,25 @@ def auth
   master_user == username && master_pass == password
 end
 
+def infoRetreive
+  account = YAML.load_file('data/accountInformation.yml')
+  puts "Please select an service you would like information for!"
+  service = gets.chomp
+  puts "The username is #{account['accounts']["#{service}"][0]}"
+  puts "The password is #{account['accounts']["#{service}"][1]}"
+end
+
+
 def app
-  if auth
-    puts 'Welcome!'
+  puts auth ? "Welcome!" :  "That is an incorrenct login!"
+
+  puts "To retreive account information please type \"retreive\""
+  command = gets.chomp
+  if command == 'retreive'; infoRetreive
+  elsif command == 'help'; puts "The only command wired right now is retreive."
+  else; puts 'not a valid command'
   end
+
 end
 
 app
