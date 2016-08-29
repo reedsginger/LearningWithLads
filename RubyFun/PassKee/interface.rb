@@ -34,7 +34,10 @@ def infoRetreive
   puts "The password is #{account['accounts']["#{service}"][1]}"
 end
 
-
+#next thing to add will be adding account information
+#also would like to add the usernames as the key and the passwords as the value
+#then we can print out the usernames on file within that service so that the user
+#knows their options.
 def app
   puts auth ? "Welcome!" :  "That is an incorrenct login!"
 
