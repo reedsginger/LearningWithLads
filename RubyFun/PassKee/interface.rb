@@ -1,5 +1,4 @@
 require "yaml"
-#May want to switch to YAML files for the sorage of data
 def auth
   if File.zero?('data/master.txt')
     puts 'Please enter a username!'
@@ -30,24 +29,89 @@ def infoRetreive
   account = YAML.load_file('data/accountInformation.yml')
   puts "Please select an service you would like information for!"
   service = gets.chomp
-  puts "The username is #{account['accounts']["#{service}"][0]}"
-  puts "The password is #{account['accounts']["#{service}"][1]}"
-end
 
-#next thing to add will be adding account information
-#also would like to add the usernames as the key and the passwords as the value
-#then we can print out the usernames on file within that service so that the user
-#knows their options.
-def app
-  puts auth ? "Welcome!" :  "That is an incorrenct login!"
-
-  puts "To retreive account information please type \"retreive\""
-  command = gets.chomp
-  if command == 'retreive'; infoRetreive
-  elsif command == 'help'; puts "The only command wired right now is retreive."
-  else; puts 'not a valid command'
+  if !account.key?("#{service}")
+    puts "You have not information for that service."
+    menu
   end
 
+  keys = []
+  account["#{service}"].map{|user,pass| keys << user}
+
+
+
+  if keys.size == 0
+    puts "There is no information for that service."
+  elsif keys.size > 1
+    keys.map{|user| puts "#{user}"}
+    puts "Please choose the username for the information you would like."
+    username = gets.chomp
+    puts "The username is #{username}."
+    puts "The password is #{account["#{service}"]["#{username}"]}."
+  else
+    puts "The username is #{keys[0]}."
+    puts "The password is #{account["#{service}"]["#{keys[0]}"]}."
+  end
+  menu
 end
 
-app
+def infoAdd
+  account = YAML.load_file('data/accountInformation.yml')
+  puts "What service would you like to add to?"
+  service = gets.chomp
+
+  if account.key?("#{service}")
+    puts "Please enter username."
+    username = gets.chomp
+    puts "Please enter password."
+    password = gets.chomp
+
+    if !account["#{service}"].key?("#{username}")
+      account["#{service}"]["#{username}"] = password
+      File.open('data/accountInformation.yml', 'w') {|f| f.write account.to_yaml}
+      puts "The information has been added."
+    else
+      puts "Information for that account already exists."
+    end
+  else
+    puts "Please enter username."
+    username = gets.chomp
+    puts "Please enter password."
+    password = gets.chomp
+
+    account["#{service}"] = {}
+    account["#{service}"]["#{username}"] = password
+
+    File.open('data/accountInformation.yml', 'w') {|f| f.write account.to_yaml}
+  end
+  menu
+end
+
+def menu
+  puts "To retreive account information please type \"retreive\" or \"r\""
+  puts "To add new account information please type \"add\" or \"a\""
+  command = gets.chomp
+
+  if command == 'retreive' || command == 'r'
+    infoRetreive
+  elsif command == 'add' || command == 'a'
+    infoAdd
+  elsif command == 'help'
+    puts "The only command wired right now is retreive."
+    menu
+  else
+    puts 'not a valid command'
+    menu
+  end
+end
+
+def login
+  if auth
+    "Welcome!"
+    menu
+  else
+    "That is an incorrenct login!"
+  end
+end
+
+login
